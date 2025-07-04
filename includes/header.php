@@ -35,7 +35,7 @@
         .header-container {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             padding: 15px 0;
-            position: fixed; /* Make header sticky */
+            position: relative; 
             width: 100%;
             top: 0;
             left: 0;
@@ -87,7 +87,7 @@
         .navbar-container {
             background: var(--primary-light);
             box-shadow: 0 4px 10px var(--shadow); /* Moved shadow here from header-container */
-            position: fixed; /* Make navbar sticky */
+            position: absolute; 
             width: 100%;
             top: 75px; /* Position it right below the header (header height ~75px) */
             left: 0;

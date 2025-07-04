@@ -34,7 +34,7 @@
         .container {
             width: 90%;
             max-width: 900px;
-            margin: 40px auto;
+            margin: 70px auto;
             padding: 30px;
             background-color: var(--white);
             border-radius: 8px;

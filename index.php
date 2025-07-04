@@ -36,12 +36,13 @@
         /* HERO */
         .hero-section {
             height: 400px;
-            background: var(--primary-color) url('images/PAC1.png') center/cover;
+            background: var(--primary-color) url('images/pacific0.png') center/cover;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             position: relative;
+             margin-top: 49px;
         }
 
         .hero-section::before {
