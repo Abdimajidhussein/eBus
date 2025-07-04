@@ -27,6 +27,7 @@
             background-color: var(--light-gray);
             color: var(--text-color);
             line-height: 1.6;
+            
         }
 
         .container {
@@ -37,6 +38,7 @@
             background-color: var(--white);
             border-radius: 8px;
             box-shadow: 0 4px 15px var(--shadow);
+            margin-top: 100px;
         }
 
         h2.section-title {
