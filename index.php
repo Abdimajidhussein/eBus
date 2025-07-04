@@ -26,8 +26,8 @@
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            /* Added padding-top to create space for the header/navbar */
-            padding-top: 1080px; /* You can adjust this value as needed */
+            /* Remove fixed padding-top; header/navbar should be handled by their own positioning (e.g., fixed/sticky) */
+            padding-top: 0; 
             background-color: var(--light-gray);
             color: var(--text-color);
             line-height: 1.6;
@@ -42,7 +42,8 @@
             justify-content: center;
             text-align: center;
             position: relative;
-             margin-top: 49px;
+            /* Adjust margin-top to account for the included header's height if it's not absolutely/fixed positioned */
+            margin-top: 0; /* Assuming header is handled by 'includes/header.php' and is positioned independently or body padding is not needed */
         }
 
         .hero-section::before {
@@ -60,6 +61,7 @@
             z-index: 1;
             max-width: 800px;
             padding: 20px;
+            box-sizing: border-box; /* Ensure padding is included in the width */
         }
 
         .hero-content h2 {
@@ -100,7 +102,8 @@
         .content-wrapper {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 20px; /* Consistent padding for content wrapper */
+            box-sizing: border-box;
         }
 
         .section-title {
@@ -120,13 +123,17 @@
         }
 
         /* CARDS */
-        .featured-routes {
+        .featured-routes,
+        .services-container,
+        .features-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
         }
 
-        .route-card {
+        .route-card,
+        .service-card,
+        .feature-card {
             background: var(--white);
             border-radius: 8px;
             overflow: hidden;
@@ -134,7 +141,9 @@
             transition: all 0.3s ease;
         }
 
-        .route-card:hover {
+        .route-card:hover,
+        .service-card:hover,
+        .feature-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
@@ -184,24 +193,9 @@
         }
 
         /* SERVICES */
-        .services-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
         .service-card {
-            background: var(--white);
-            border-radius: 8px;
             padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
         .service-icon-container {
@@ -241,23 +235,8 @@
         }
 
         /* FEATURES */
-        .features-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
         .feature-card {
-            background: var(--white);
-            border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
         .feature-icon {
@@ -281,7 +260,7 @@
         /* STATS */
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjusted minmax for smaller screens */
             gap: 20px;
             margin: 40px 0;
         }
@@ -299,6 +278,11 @@
             color: var(--primary-color);
         }
 
+        .stat-label {
+            font-size: 0.9em;
+            color: #555;
+        }
+
         /* CTA */
         .cta-section {
             background: var(--primary-color);
@@ -308,6 +292,7 @@
             margin: 60px auto;
             max-width: 1000px;
             text-align: center;
+            box-sizing: border-box; /* Include padding in width */
         }
 
         .cta-section h2 {
@@ -316,50 +301,152 @@
         }
 
         /* RESPONSIVE */
-        @media (max-width: 768px) {
-            body {
-                padding-top: 60px; /* Adjust for smaller screens */
+        @media (max-width: 992px) {
+            .hero-content h2 {
+                font-size: 2.8em;
             }
+            .hero-content p {
+                font-size: 1.1em;
+            }
+            .section-title {
+                font-size: 2em;
+            }
+            .section-subtitle {
+                font-size: 0.95em;
+            }
+        }
+
+        @media (max-width: 768px) {
             .hero-section {
                 height: 350px;
             }
-
             .hero-content h2 {
-                font-size: 2.2em;
+                font-size: 2.4em;
             }
-
+            .hero-content p {
+                font-size: 1em;
+            }
             .section-padding {
-                padding: 50px 15px;
+                padding: 40px 15px;
             }
-
             .section-title {
                 font-size: 1.8em;
             }
-
+            .section-subtitle {
+                margin-bottom: 30px;
+            }
+            .featured-routes,
+            .services-container,
+            .features-container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            .route-card-img-container {
+                height: 160px;
+            }
+            .service-card, .feature-card {
+                padding: 25px;
+            }
             .cta-section {
                 margin: 40px auto;
                 padding: 40px 15px;
             }
-
             .cta-section h2 {
                 font-size: 1.8em;
             }
+            .stats-container {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+            .stat-number {
+                font-size: 2em;
+            }
         }
 
-        @media (max-width: 480px) {
-            body {
-                padding-top: 50px; /* Adjust for even smaller screens */
-            }
+        @media (max-width: 576px) {
             .hero-section {
                 height: 300px;
             }
-
             .hero-content h2 {
+                font-size: 2em;
+            }
+            .hero-content p {
+                font-size: 0.9em;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            .section-padding {
+                padding: 30px 10px;
+            }
+            .section-title {
+                font-size: 1.6em;
+            }
+            .section-subtitle {
+                font-size: 0.85em;
+                margin-bottom: 25px;
+            }
+            .featured-routes,
+            .services-container,
+            .features-container {
+                grid-template-columns: 1fr; /* Stack cards on very small screens */
+                gap: 15px;
+            }
+            .route-card-img-container {
+                height: 150px;
+            }
+            .route-card-content, .service-card, .feature-card {
+                padding: 20px;
+            }
+            .route-price {
+                font-size: 1.1em;
+            }
+            .service-icon-container {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            .feature-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            .cta-section {
+                padding: 30px 10px;
+            }
+            .cta-section h2 {
+                font-size: 1.6em;
+            }
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr); /* Two columns for stats on small phones */
+                gap: 15px;
+            }
+            .stat-number {
                 font-size: 1.8em;
             }
+            .stat-label {
+                font-size: 0.8em;
+            }
+        }
 
-            .section-padding {
-                padding: 40px 10px;
+        @media (max-width: 380px) {
+            .hero-content h2 {
+                font-size: 1.6em;
+            }
+            .hero-content p {
+                font-size: 0.8em;
+            }
+            .section-title {
+                font-size: 1.4em;
+            }
+            .route-card-content h3 {
+                font-size: 1.1em;
+            }
+            .service-card h3 {
+                font-size: 1.2em;
+            }
+            .feature-title {
+                font-size: 1.1em;
             }
         }
     </style>

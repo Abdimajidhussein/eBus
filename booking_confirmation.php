@@ -14,6 +14,23 @@ $booking = $_SESSION['booking_details'];
 // Optionally, clear booking details from session if they are no longer needed
 // after being displayed (e.g., to prevent refresh re-displaying old data)
 // unset($_SESSION['booking_details']);
+
+// Prepare data for QR code
+// It's good practice to encode a unique identifier or a summary of the booking.
+// For demonstration, let's encode the Booking ID and Passenger Name.
+$qr_data = "Booking ID: " . $booking['booking_id'] . "\n";
+$qr_data .= "Passenger: " . $booking['full_name'] . "\n";
+$qr_data .= "Route: " . $booking['schedule']['origin'] . " to " . $booking['schedule']['destination'] . "\n";
+$qr_data .= "Date: " . date("Y-m-d", strtotime($booking['schedule']['departure_time'])) . "\n";
+$qr_data .= "Seats: " . implode(', ', $booking['selected_seats']) . "\n";
+$qr_data .= "Total: Ksh " . number_format($booking['total_fare']);
+
+// Encode the data for URL
+$encoded_qr_data = urlencode($qr_data);
+
+// Construct QR code API URL (using goqr.me as an example)
+// Parameters: size (WxH), data
+$qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . $encoded_qr_data;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +40,8 @@ $booking = $_SESSION['booking_details'];
     <title>Booking Confirmed! - Your Bus Line</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
+   <?php include 'includes/header.php'; ?>
+   <style>
         /* General Styles for Screen Display */
         :root {
             --primary-color: #0F4C81;
@@ -45,41 +63,6 @@ $booking = $_SESSION['booking_details'];
             line-height: 1.6;
         }
 
-        .header {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 15px 0;
-            text-align: center;
-            box-shadow: 0 2px 4px var(--shadow);
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 2.2em;
-            font-weight: 700;
-        }
-
-        .navbar {
-            background-color: var(--primary-dark);
-            padding: 10px 0;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .navbar a {
-            color: var(--white);
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            font-weight: 600;
-        }
-
-        .navbar a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
         .container {
             width: 90%;
             max-width: 800px;
@@ -92,7 +75,7 @@ $booking = $_SESSION['booking_details'];
         }
 
         .confirmation-message {
-            background-color: var(--accent-color);
+            background-color: var(--accent-color); /* This will make it green */
             color: var(--white);
             padding: 20px;
             border-radius: 8px;
@@ -139,15 +122,6 @@ $booking = $_SESSION['booking_details'];
         }
         .btn.print-ticket-btn:hover {
             background-color: #5a6268;
-        }
-
-        .footer {
-            background-color: var(--primary-dark);
-            color: var(--white);
-            text-align: center;
-            padding: 25px 0;
-            margin-top: 50px;
-            font-size: 0.9em;
         }
 
         /* --- Receipt-Style E-Ticket Specifics (On-Screen) --- */
@@ -232,19 +206,12 @@ $booking = $_SESSION['booking_details'];
             border-top: 1px dashed #999;
         }
 
-        .receipt-qr-code-placeholder {
-            width: 100px;
-            height: 100px;
-            background-color: #eee;
-            border: 1px solid #ccc;
-            margin: 10px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7em;
-            color: #777;
-            text-align: center;
-            line-height: 1.2;
+        /* QR code styling */
+        .receipt-qr-code {
+            display: block; /* Ensures the image is on its own line */
+            margin: 10px auto; /* Centers the image */
+            max-width: 150px; /* Ensures it doesn't overflow */
+            height: auto;
         }
 
 
@@ -267,8 +234,9 @@ $booking = $_SESSION['booking_details'];
                 font-size: 0.9em; /* Adjust overall font size for print readability */
             }
 
+            /* Hide all non-ticket elements when printing */
             .header, .navbar, .footer, .container h2.page-title, .confirmation-message, .btn-group {
-                display: none; /* Hide non-ticket elements when printing */
+                display: none;
             }
 
             .container {
@@ -307,10 +275,6 @@ $booking = $_SESSION['booking_details'];
             .ticket-total, .ticket-final-message {
                 border-top: 1px dashed #000 !important;
             }
-            .receipt-qr-code-placeholder {
-                border-color: #000 !important;
-                background-color: #fff !important;
-            }
             .receipt-ticket-header .logo-placeholder {
                  border: 1px dashed #000 !important;
                  background-color: #fff !important;
@@ -332,29 +296,19 @@ $booking = $_SESSION['booking_details'];
                 margin-top: 5px !important;
                 padding-top: 5px !important;
             }
-            .receipt-qr-code-placeholder {
-                margin: 5px auto !important;
-            }
             .receipt-ticket-header .logo-placeholder {
                  margin-bottom: 5px !important;
+            }
+            /* QR code specific print styles */
+            .receipt-qr-code {
+                display: block !important; /* Make sure it's visible in print */
+                margin: 5px auto !important; /* Adjust margin for print */
+                background-color: #fff !important; /* Ensure white background for QR */
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Your Bus Line</h1>
-    </div>
-
-    <div class="navbar">
-        <a href="index.php">Home</a>
-        <a href="view_schedules.php">View Schedules</a>
-        <a href="my_bookings.php">My Bookings</a>
-        <a href="about.php">About Us</a>
-        <a href="contact.php">Contact</a>
-        <a href="login.php">Login / Register</a>
-    </div>
-
     <div class="container">
         <div class="confirmation-message">
             Your Booking is Confirmed!
@@ -432,9 +386,7 @@ $booking = $_SESSION['booking_details'];
             </div>
 
             <div class="ticket-section">
-                 <div class="receipt-qr-code-placeholder">
-                    SCAN FOR VALIDATION
-                </div>
+                <img src="<?php echo $qr_code_url; ?>" alt="QR Code for Ticket Validation" class="receipt-qr-code">
             </div>
 
             <div class="ticket-final-message">
@@ -448,10 +400,6 @@ $booking = $_SESSION['booking_details'];
             <button onclick="window.print()" class="btn print-ticket-btn">Print Ticket</button>
         </div>
     </div>
-
-    <div class="footer">
-        <p>&copy; <?php echo date("Y"); ?> Your Bus Line. All rights reserved.</p>
-        <p>Located in Mombasa, Mombasa County, Kenya.</p>
-    </div>
+    <?php include 'includes/footer.php'; ?>
 </body>
 </html>
