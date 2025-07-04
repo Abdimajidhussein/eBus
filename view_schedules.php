@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bus Schedules - Your Bus Line</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <?php include 'includes/Header.php'; ?>
-
+ <?php include 'includes/header.php'; ?>
     <style>
         :root {
             /* Professional Blue Palette */
@@ -261,7 +260,6 @@
         }
         ?>
     </div>
-    <?php include 'includes/footer.php'; ?>
-
+ <?php include 'includes/footer.php'; ?>
 </body>
 </html>
