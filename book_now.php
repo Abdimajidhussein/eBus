@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Seats - Your Bus Line</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
+  <?php include 'includes/header.php'; ?>
+  <style>
         :root {
             /* Professional Blue Palette */
             --primary-color: #0F4C81; /* Deep, professional blue */
@@ -27,48 +28,10 @@
             line-height: 1.6;
         }
 
-        .header {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 15px 0;
-            text-align: center;
-            box-shadow: 0 2px 4px var(--shadow);
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 2.2em;
-            font-weight: 700;
-        }
-
-        .navbar {
-            background-color: var(--primary-dark);
-            padding: 10px 0;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .navbar a {
-            color: var(--white);
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            font-weight: 600;
-        }
-
-        .navbar a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .navbar a.current-page {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-
         .container {
             width: 90%;
             max-width: 1200px;
-            margin: 40px auto;
+            margin: 100px auto;
             padding: 30px;
             background-color: var(--white);
             border-radius: 8px;
@@ -386,15 +349,6 @@
         }
 
 
-        .footer {
-            background-color: var(--primary-dark);
-            color: var(--white);
-            text-align: center;
-            padding: 25px 0;
-            margin-top: 50px;
-            font-size: 0.9em;
-        }
-
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .container {
@@ -433,19 +387,6 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Your Bus Line</h1>
-    </div>
-
-    <div class="navbar">
-        <a href="index.php">Home</a>
-        <a href="view_schedules.php">View Schedules</a>
-        <a href="my_bookings.php">My Bookings</a>
-        <a href="about.php">About Us</a>
-        <a href="contact.php">Contact</a>
-        <a href="login.php">Login / Register</a>
-    </div>
-
     <div class="container">
         <h2 class="section-title">Select Your Seats & Provide Details</h2>
 
@@ -466,14 +407,6 @@ if (isset($_SESSION['booking_errors']) && !empty($_SESSION['booking_errors'])) {
     unset($_SESSION['booking_errors']);
 }
 ?>
-
-<div class="container">
-    <h2 class="section-title">Select Your Seats & Provide Details</h2>
-
-    <?php
-    // ... (rest of your existing PHP and HTML for book_now.php) ...
-    ?>
-</div>
 
         <?php
         // Get schedule ID from URL
@@ -596,11 +529,6 @@ if (isset($_SESSION['booking_errors']) && !empty($_SESSION['booking_errors'])) {
         ?>
     </div>
 
-    <div class="footer">
-        <p>&copy; <?php echo date("Y"); ?> Your Bus Line. All rights reserved.</p>
-        <p>Located in Mombasa, Mombasa County, Kenya.</p>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const seats = document.querySelectorAll('.seat');
@@ -661,8 +589,8 @@ if (isset($_SESSION['booking_errors']) && !empty($_SESSION['booking_errors'])) {
 
                 // Check form validity
                 const isFormValid = fullNameInput.value.trim() !== '' &&
-                                    emailInput.value.trim() !== '' && emailInput.checkValidity() &&
-                                    phoneInput.value.trim() !== '';
+                                     emailInput.value.trim() !== '' && emailInput.checkValidity() &&
+                                     phoneInput.value.trim() !== '';
 
                 // Enable/disable proceed button based on seats selected AND form validity
                 if (selectedSeats.length > 0 && isFormValid) {
@@ -673,11 +601,12 @@ if (isset($_SESSION['booking_errors']) && !empty($_SESSION['booking_errors'])) {
                     if (selectedSeats.length === 0) {
                         passengerDetailsSection.style.display = 'none'; // Hide form if no seats selected
                     } else {
-                         passengerDetailsSection.style.display = 'block'; // Keep form visible if seats selected but form not valid
+                           passengerDetailsSection.style.display = 'block'; // Keep form visible if seats selected but form not valid
                     }
                 }
             }
         });
     </script>
+    <?php include 'includes/footer.php'; ?>
 </body>
 </html>
