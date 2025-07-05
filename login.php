@@ -6,8 +6,14 @@
     <title>Pacific Coach - Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <?php include 'includes/header.php'; ?>
+    <?php
+    // Include the header.php file which should handle session_start()
+    // and define styling variables if you placed them there.
+    include 'includes/header.php';
+    ?>
     <style>
+        /* These CSS variables should ideally be defined in a central CSS file or header.php,
+           but are included here for completeness based on previous interactions. */
         :root {
             --primary-color: #0F4C81;
             --primary-light: #1a5d9a;
@@ -123,10 +129,24 @@
             text-decoration: underline;
         }
 
-        .error-message {
-            color: var(--accent-color);
+        .error-message, .success-message {
             margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
             font-size: 0.9em;
+            text-align: left;
+        }
+
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
         }
 
         /* Responsive adjustments */
@@ -145,20 +165,40 @@
         <div class="login-box">
             <h2>Login to Pacific Coach</h2>
             <?php
-            // PHP logic for error messages (example)
+            // PHP logic for error and success messages
             if (isset($_GET['error'])) {
-                echo '<p class="error-message">Invalid username or password.</p>';
+                $error_message = '';
+                switch ($_GET['error']) {
+                    case 'empty_fields':
+                        $error_message = 'Please enter both username/email and password.';
+                        break;
+                    case 'invalid_credentials':
+                        $error_message = 'Invalid username or password.'; // Generic message for security
+                        break;
+                    case 'account_inactive':
+                        $error_message = 'Your account is inactive. Please contact support.';
+                        break;
+                    case 'db_error':
+                        $error_message = 'A database error occurred. Please try again later.';
+                        break;
+                    default:
+                        $error_message = 'An unexpected error occurred during login.';
+                        break;
+                }
+                echo '<p class="error-message">' . htmlspecialchars($error_message) . '</p>';
+            } elseif (isset($_GET['registration_success']) && $_GET['registration_success'] == '1') {
+                echo '<p class="success-message">Registration successful! Please log in.</p>';
             }
             ?>
             <form action="includes/login_process.php" method="POST">
                 <div class="input-group">
                     <label for="username">Username or Email</label>
-                    <input type="text" id="username" name="username" required>
+                    <input type="text" id="username" name="username_or_email" required>
                 </div>
                 <div class="input-group">
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" required maxlength="32">
-    </div>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required maxlength="12">
+                </div>
                 <button type="submit" class="btn-login">Login</button>
             </form>
             <div class="links-container">
@@ -167,6 +207,9 @@
             </div>
         </div>
     </div>
-    <?php include 'includes/footer.php'; ?>
+    <?php
+    // Include the footer.php file
+    include 'includes/footer.php';
+    ?>
 </body>
 </html>
