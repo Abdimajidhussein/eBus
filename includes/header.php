@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pacific Coach - Home</title> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Pacific Coach - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
@@ -192,14 +193,67 @@
 </div>
 
 <div class="navbar-container">
-    <div class="navbar">
+    <div class="navbar" id="main-navbar">
         <a href="index.php"><i class="fas fa-home"></i> Home</a>
         <a href="view_schedules.php"><i class="fas fa-calendar-alt"></i> View Schedules</a>
-        <a href="my_bookings.php"><i class="fas fa-ticket-alt"></i> My Bookings</a>
+        <a href="my_bookings.php" class="auth-required"><i class="fas fa-ticket-alt"></i> My Bookings</a>
         <a href="about.php"><i class="fas fa-info-circle"></i> About Us</a>
         <a href="contact.php"><i class="fas fa-envelope"></i> Contact</a>
-        <a href="login.php"><i class="fas fa-user"></i> Login / Register</a>
+        <a href="login.php" id="login-register-link"><i class="fas fa-user"></i> Login / Register</a>
+        <a href="#" id="logout-link" class="auth-required" style="display: none;"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- SIMULATE USER LOGIN STATUS ---
+        // In a real application, you would check a cookie, local storage,
+        // or a server-side session variable here.
+        // For demonstration: Set to true if a user is "logged in", false otherwise.
+        const userIsLoggedIn = false; // <<< CHANGE THIS TO `true` TO TEST LOGGED-IN STATE
+
+        const authRequiredLinks = document.querySelectorAll('.auth-required');
+        const loginRegisterLink = document.getElementById('login-register-link');
+        const logoutLink = document.getElementById('logout-link');
+
+        if (userIsLoggedIn) {
+            // User is signed in:
+            // 1. Show authenticated links
+            authRequiredLinks.forEach(link => {
+                link.style.display = ''; // Restore default display
+            });
+            // 2. Hide Login/Register link
+            if (loginRegisterLink) {
+                loginRegisterLink.style.display = 'none';
+            }
+            // 3. Show Logout link
+            if (logoutLink) {
+                logoutLink.style.display = ''; // Restore default display
+                logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert('Logging out...'); // Replace with actual logout logic
+                    // In a real app, you would clear session/cookies and redirect
+                    window.location.reload(); // Reload to show logged-out state
+                });
+            }
+
+        } else {
+            // User is NOT signed in:
+            // 1. Hide authenticated links
+            authRequiredLinks.forEach(link => {
+                link.style.display = 'none';
+            });
+            // 2. Show Login/Register link (ensure it's visible if it was hidden by mistake)
+            if (loginRegisterLink) {
+                loginRegisterLink.style.display = '';
+            }
+            // 3. Hide Logout link
+            if (logoutLink) {
+                logoutLink.style.display = 'none';
+            }
+        }
+    });
+</script>
+
 </body>
 </html>
