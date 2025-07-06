@@ -1,3 +1,15 @@
+<?php
+// Start session for login check
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
+$username = $_SESSION['username'] ?? '';
+
+// Corrected logic for isAdmin
+$isAdmin = ($_SESSION['user_type'] ?? '') === 'admin';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,24 +38,19 @@
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            /* Remove fixed padding-top; header/navbar should be handled by their own positioning (e.g., fixed/sticky) */
-            padding-top: 0; 
+            padding-top: 135px; /* Based on your header.php styling previously provided (75px header + 60px navbar) */
             background-color: var(--light-gray);
             color: var(--text-color);
             line-height: 1.6;
         }
 
-        /* HERO */
+        /* HERO - Carousel */
         .hero-section {
             height: 400px;
-            background: var(--primary-color) url('images/pacific0.png') center/cover;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            background-color: var(--primary-color);
             position: relative;
-            /* Adjust margin-top to account for the included header's height if it's not absolutely/fixed positioned */
-            margin-top: 139px; /* Assuming header is handled by 'includes/header.php' and is positioned independently or body padding is not needed */
+            overflow: hidden;
+            margin-top: 139px;
         }
 
         .hero-section::before {
@@ -54,27 +61,114 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
+            z-index: 1;
         }
+
+        .carousel-inner {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease-in-out; /* Smooth slide transition */
+        }
+
+        .carousel-item {
+            min-width: 100%;
+            height: 100%;
+            background-size: cover; /* Ensures the image covers the entire area */
+            background-position: center; /* Centers the image within the container */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .carousel-item-1 { background-image: url('images/pacific0.png'); }
+        .carousel-item-2 { background-image: url('images/in3.jpeg'); }
+        .carousel-item-3 { background-image: url('images/city-transport.jpg'); }
+        .carousel-item-4 { background-image: url('images/bus-night.jpg'); }
+        .carousel-item-5 { background-image: url('images/support2.jpg'); }
+
+        /* If you added a duplicate for looping, add its style too */
+        .carousel-item-clone-1 { background-image: url('images/pacific0.png'); }
+
 
         .hero-content {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             max-width: 800px;
             padding: 20px;
-            box-sizing: border-box; /* Ensure padding is included in the width */
+            box-sizing: border-box;
+            color: var(--white);
         }
 
         .hero-content h2 {
             font-size: 3em;
             margin-bottom: 15px;
             color: var(--white);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
         }
 
         .hero-content p {
             font-size: 1.2em;
             margin-bottom: 30px;
             color: var(--white);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
+
+        /* Carousel Controls (Arrows) */
+        .carousel-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            border: none;
+            padding: 15px 10px;
+            cursor: pointer;
+            z-index: 3;
+            font-size: 1.5em;
+            transition: background 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .carousel-control:hover {
+            background: rgba(0,0,0,0.6);
+        }
+
+        .carousel-control-prev {
+            left: 10px;
+        }
+
+        .carousel-control-next {
+            right: 10px;
+        }
+
+        /* Carousel Indicators (Dots) */
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            display: flex;
+            gap: 10px;
+        }
+
+        .carousel-indicator-dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .carousel-indicator-dot.active {
+            background: var(--accent-color);
+            transform: scale(1.2);
+        }
+
 
         /* BUTTONS */
         .btn {
@@ -102,7 +196,7 @@
         .content-wrapper {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px; /* Consistent padding for content wrapper */
+            padding: 0 20px;
             box-sizing: border-box;
         }
 
@@ -260,7 +354,7 @@
         /* STATS */
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjusted minmax for smaller screens */
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
             margin: 40px 0;
         }
@@ -292,7 +386,7 @@
             margin: 60px auto;
             max-width: 1000px;
             text-align: center;
-            box-sizing: border-box; /* Include padding in width */
+            box-sizing: border-box;
         }
 
         .cta-section h2 {
@@ -453,10 +547,60 @@
 </head>
 <body>
     <div class="hero-section">
-        <div class="hero-content">
-            <h2>Your Journey Starts Here</h2>
-            <p>Providing safe, reliable, and comfortable bus travel across Mombasa County and beyond.</p>
-            <a href="view_schedules.php" class="btn">Explore Our Routes</a>
+        <div class="carousel-inner" id="carouselInner">
+            <div class="carousel-item carousel-item-1">
+                <div class="hero-content">
+                    <h2>Your Journey Starts Here</h2>
+                    <p>Providing safe, reliable, and comfortable bus travel across Mombasa County and beyond.</p>
+                    <a href="view_schedules.php" class="btn">Explore Our Routes</a>
+                </div>
+            </div>
+            <div class="carousel-item carousel-item-2">
+                <div class="hero-content">
+                    <h2>Modern Fleet, Unmatched Comfort</h2>
+                    <p>Experience luxurious travel with Wi-Fi, reclining seats, and spacious interiors.</p>
+                    <a href="about.php" class="btn">Learn More</a>
+                </div>
+            </div>
+            <div class="carousel-item carousel-item-3">
+                <div class="hero-content">
+                    <h2>Book With Ease, Travel With Peace</h2>
+                    <p>Our online booking system makes planning your trip simple and stress-free.</p>
+                    <a href="my_bookings.php" class="btn">Manage Bookings</a>
+                </div>
+            </div>
+            <div class="carousel-item carousel-item-4">
+                <div class="hero-content">
+                    <h2>Connecting You to Your Destination</h2>
+                    <p>With an extensive network, we cover major towns and cities across the region.</p>
+                    <a href="view_schedules.php" class="btn">View All Routes</a>
+                </div>
+            </div>
+            <div class="carousel-item carousel-item-5">
+                <div class="hero-content">
+                    <h2>24/7 Support for Your Peace of Mind</h2>
+                    <p>Our dedicated support team is always available to assist you, day or night.</p>
+                    <a href="contact.php" class="btn">Contact Support</a>
+                </div>
+            </div>
+            <div class="carousel-item carousel-item-clone-1">
+                <div class="hero-content">
+                    <h2>Your Journey Starts Here</h2>
+                    <p>Providing safe, reliable, and comfortable bus travel across Mombasa County and beyond.</p>
+                    <a href="view_schedules.php" class="btn">Explore Our Routes</a>
+                </div>
+            </div>
+        </div>
+
+        <button class="carousel-control carousel-control-prev" onclick="plusSlides(-1)">&#10094;</button>
+        <button class="carousel-control carousel-control-next" onclick="plusSlides(1)">&#10095;</button>
+
+        <div class="carousel-indicators" id="carouselIndicators">
+            <span class="carousel-indicator-dot active" onclick="currentSlide(1)"></span>
+            <span class="carousel-indicator-dot" onclick="currentSlide(2)"></span>
+            <span class="carousel-indicator-dot" onclick="currentSlide(3)"></span>
+            <span class="carousel-indicator-dot" onclick="currentSlide(4)"></span>
+            <span class="carousel-indicator-dot" onclick="currentSlide(5)"></span>
         </div>
     </div>
 
@@ -608,5 +752,109 @@
     </div>
     <?php include 'includes/footer.php'; ?>
 
+    <script>
+        let slideIndex = 0; // Current actual slide index (0 to 4 for 5 slides)
+        let totalSlides = 5; // Number of actual slides
+        let carouselInner;
+        let slides;
+        let dots;
+        let autoSlideTimeout; // Use setTimeout for clearer control than setInterval
+
+        function initializeCarousel() {
+            carouselInner = document.getElementById('carouselInner');
+            slides = document.querySelectorAll(".carousel-item:not(.carousel-item-clone-1)"); // Get only original slides
+            dots = document.getElementsByClassName("carousel-indicator-dot");
+
+            // Position to the first slide (which is technically the first clone in the transform logic)
+            // The initial transform should be -100% to show the first actual slide if clones are at start
+            // But with clone at end, we start at 0 and transition to -100% for the next
+            showSlide(slideIndex, false); // Show first slide immediately, no transition
+            startAutoSlide();
+        }
+
+        function showSlide(index, useTransition = true) {
+            // Adjust the transform property
+            if (useTransition) {
+                carouselInner.style.transition = 'transform 0.5s ease-in-out';
+            } else {
+                carouselInner.style.transition = 'none'; // Disable transition for instant jump
+            }
+
+            carouselInner.style.transform = 'translateX(' + (-index * 100) + '%)';
+
+            // Update active dot
+            // The dots correspond to the actual slides, not the clone
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].classList.remove('active');
+            }
+            if (index < totalSlides) { // Only update dot for non-clone slides
+                 dots[index].classList.add('active');
+            } else {
+                // If it's the clone, highlight the first dot
+                dots[0].classList.add('active');
+            }
+        }
+
+        function plusSlides(n) {
+            clearTimeout(autoSlideTimeout); // Stop auto-slide on manual interaction
+
+            slideIndex += n;
+
+            // Handle looping for forward movement
+            if (slideIndex > totalSlides) { // If going past the last actual slide (and into the clone)
+                // Temporarily show the clone with transition
+                showSlide(slideIndex);
+                // After the transition, instantly jump back to the first real slide
+                setTimeout(() => {
+                    slideIndex = 0;
+                    showSlide(slideIndex, false); // No transition for the jump
+                }, 500); // Must match CSS transition duration
+            }
+            // Handle looping for backward movement (optional, but good for completeness)
+            else if (slideIndex < 0) {
+                // If moving backwards from the first slide, jump to the last real slide
+                slideIndex = totalSlides - 1;
+                showSlide(slideIndex, false); // No transition for the jump
+            }
+            else {
+                showSlide(slideIndex); // Normal slide transition
+            }
+
+            startAutoSlide(); // Restart auto-slide
+        }
+
+        function currentSlide(n) {
+            clearTimeout(autoSlideTimeout); // Stop auto-slide on manual interaction
+            slideIndex = n - 1; // n is 1-based, slideIndex is 0-based
+            showSlide(slideIndex);
+            startAutoSlide(); // Restart auto-slide
+        }
+
+        function autoAdvanceSlides() {
+            slideIndex++; // Advance to the next slide
+            if (slideIndex >= totalSlides) {
+                // When we are about to move to the clone, apply transition for the clone first
+                showSlide(slideIndex);
+                // Then, after the transition, quickly reset to the real first slide (index 0)
+                autoSlideTimeout = setTimeout(() => {
+                    slideIndex = 0;
+                    showSlide(slideIndex, false); // No transition for the jump back
+                    autoSlideTimeout = setTimeout(autoAdvanceSlides, 5000); // Start next auto-advance
+                }, 500); // This delay should match the CSS transition duration
+            } else {
+                showSlide(slideIndex);
+                autoSlideTimeout = setTimeout(autoAdvanceSlides, 5000); // Continue auto-advancing
+            }
+        }
+
+        function startAutoSlide() {
+            clearTimeout(autoSlideTimeout); // Clear any existing timer
+            autoSlideTimeout = setTimeout(autoAdvanceSlides, 5000); // Start auto-advancing every 5 seconds
+        }
+
+
+        // Initialize the carousel when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', initializeCarousel);
+    </script>
 </body>
 </html>
