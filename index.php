@@ -43,7 +43,7 @@
             text-align: center;
             position: relative;
             /* Adjust margin-top to account for the included header's height if it's not absolutely/fixed positioned */
-            margin-top: 0; /* Assuming header is handled by 'includes/header.php' and is positioned independently or body padding is not needed */
+            margin-top: 139px; /* Assuming header is handled by 'includes/header.php' and is positioned independently or body padding is not needed */
         }
 
         .hero-section::before {
