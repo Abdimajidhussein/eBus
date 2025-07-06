@@ -5,7 +5,12 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $username = $_SESSION['username'] ?? '';
-$isAdmin = $_SESSION['user_type'] ?? '' === 'admin';
+
+// Corrected logic for isAdmin
+$isAdmin = ($_SESSION['user_type'] ?? '') === 'admin';
+
+// Define the base path for assets if needed (e.g., if this file is included from different depths)
+$base_path = ''; // Assuming header.php is in the root or included from root
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +19,6 @@ $isAdmin = $_SESSION['user_type'] ?? '' === 'admin';
     <title>Pacific Coach - Navigation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
@@ -33,7 +37,7 @@ $isAdmin = $_SESSION['user_type'] ?? '' === 'admin';
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding-top: 135px;
+            padding-top: 135px; /* Adjust if header height changes */
             background-color: var(--light-gray);
             color: #343a40;
         }
@@ -127,6 +131,7 @@ $isAdmin = $_SESSION['user_type'] ?? '' === 'admin';
             text-decoration: none;
             display: block;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85em; /* Adjusted font size */
         }
 
         .dropdown-content a:hover {
@@ -136,7 +141,7 @@ $isAdmin = $_SESSION['user_type'] ?? '' === 'admin';
         /* Navbar */
         .navbar-container {
             position: fixed;
-            top: 75px;
+            top: 75px; /* Adjust this value based on header-container height */
             left: 0;
             width: 100%;
             background-color: var(--navbar-bg);
@@ -170,34 +175,62 @@ $isAdmin = $_SESSION['user_type'] ?? '' === 'admin';
 
         @media (max-width: 768px) {
             body {
-                padding-top: 200px;
+                padding-top: 200px; /* Adjust for stacked header and navbar */
+            }
+
+            .header-container {
+                position: static; /* Allow header to flow naturally */
+                box-shadow: none; /* Remove shadow to blend with navbar when stacked */
+                padding-bottom: 0; /* Remove bottom padding */
+            }
+
+            .navbar-container {
+                position: static; /* Allow navbar to flow naturally below header */
+                top: auto;
+                box-shadow: none; /* Remove shadow */
+                padding-top: 0; /* Remove top padding */
             }
 
             .header {
                 flex-direction: column;
                 text-align: center;
+                padding-bottom: 10px; /* Add some space below header content */
             }
 
             .header-right {
                 margin-top: 10px;
+                flex-direction: column; /* Stack badge and dropdown */
+                width: 100%;
+                gap: 10px; /* Gap between badge and dropdown */
+            }
+
+            .header-badge, .dropdown-toggle {
+                width: calc(100% - 30px); /* Adjust width to fit padding */
+                text-align: center;
             }
 
             .navbar {
                 flex-direction: column;
                 align-items: center;
+                padding-top: 10px; /* Add some space above navbar links */
+            }
+
+            .navbar a {
+                width: calc(100% - 40px); /* Adjust width to fit padding */
+                text-align: center;
             }
 
             .dropdown-content {
-                position: static;
+                position: static; /* Stack dropdown content below toggle */
                 width: 100%;
                 box-shadow: none;
+                border-radius: 0;
             }
 
             .dropdown-content a {
                 text-align: center;
             }
         }
-
     </style>
 </head>
 <body>
@@ -215,11 +248,10 @@ $isAdmin = $_SESSION['user_type'] ?? '' === 'admin';
                     <a href="profile.php"><i class="fas fa-id-badge"></i> My Profile</a>
                     <a href="settings.php"><i class="fas fa-cog"></i> Settings</a>
                     <a href="change_password.php"><i class="fas fa-key"></i> Change Password</a>
-                    <a href="order_history.php"><i class="fas fa-history"></i> Order History</a>
                     <?php if ($isAdmin): ?>
                         <a href="admin/dashboard.php"><i class="fas fa-cogs"></i> Admin Dashboard</a>
                     <?php endif; ?>
-                    <a href="includes/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
             </div>
             <?php endif; ?>

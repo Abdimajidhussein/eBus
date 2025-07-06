@@ -37,7 +37,7 @@
             background-color: var(--white);
             border-radius: 8px;
             box-shadow: 0 4px 15px var(--shadow);
-            margin-top: 100px;
+            margin-top: 150px;
         }
 
         h2.section-title {
