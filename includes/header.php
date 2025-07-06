@@ -5,12 +5,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $username = $_SESSION['username'] ?? '';
-
-// Corrected logic for isAdmin
 $isAdmin = ($_SESSION['user_type'] ?? '') === 'admin';
 
-// Define the base path for assets if needed (e.g., if this file is included from different depths)
-$base_path = ''; // Assuming header.php is in the root or included from root
+$base_path = '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +34,7 @@ $base_path = ''; // Assuming header.php is in the root or included from root
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding-top: 135px; /* Adjust if header height changes */
+            padding-top: 135px;
             background-color: var(--light-gray);
             color: #343a40;
         }
@@ -131,7 +128,7 @@ $base_path = ''; // Assuming header.php is in the root or included from root
             text-decoration: none;
             display: block;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.85em; /* Adjusted font size */
+            font-size: 0.85em;
         }
 
         .dropdown-content a:hover {
@@ -141,10 +138,10 @@ $base_path = ''; // Assuming header.php is in the root or included from root
         /* Navbar */
         .navbar-container {
             position: fixed;
-            top: 75px; /* Adjust this value based on header-container height */
+            top: 75px;
             left: 0;
             width: 100%;
-            background-color: var(--navbar-bg);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); /* Updated */
             box-shadow: 0 4px 10px var(--shadow);
             z-index: 999;
         }
@@ -175,53 +172,53 @@ $base_path = ''; // Assuming header.php is in the root or included from root
 
         @media (max-width: 768px) {
             body {
-                padding-top: 200px; /* Adjust for stacked header and navbar */
+                padding-top: 200px;
             }
 
             .header-container {
-                position: static; /* Allow header to flow naturally */
-                box-shadow: none; /* Remove shadow to blend with navbar when stacked */
-                padding-bottom: 0; /* Remove bottom padding */
+                position: static;
+                box-shadow: none;
+                padding-bottom: 0;
             }
 
             .navbar-container {
-                position: static; /* Allow navbar to flow naturally below header */
+                position: static;
                 top: auto;
-                box-shadow: none; /* Remove shadow */
-                padding-top: 0; /* Remove top padding */
+                box-shadow: none;
+                padding-top: 0;
             }
 
             .header {
                 flex-direction: column;
                 text-align: center;
-                padding-bottom: 10px; /* Add some space below header content */
+                padding-bottom: 10px;
             }
 
             .header-right {
                 margin-top: 10px;
-                flex-direction: column; /* Stack badge and dropdown */
+                flex-direction: column;
                 width: 100%;
-                gap: 10px; /* Gap between badge and dropdown */
+                gap: 10px;
             }
 
             .header-badge, .dropdown-toggle {
-                width: calc(100% - 30px); /* Adjust width to fit padding */
+                width: calc(100% - 30px);
                 text-align: center;
             }
 
             .navbar {
                 flex-direction: column;
                 align-items: center;
-                padding-top: 10px; /* Add some space above navbar links */
+                padding-top: 10px;
             }
 
             .navbar a {
-                width: calc(100% - 40px); /* Adjust width to fit padding */
+                width: calc(100% - 40px);
                 text-align: center;
             }
 
             .dropdown-content {
-                position: static; /* Stack dropdown content below toggle */
+                position: static;
                 width: 100%;
                 box-shadow: none;
                 border-radius: 0;

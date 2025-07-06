@@ -66,7 +66,7 @@ $qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" 
         .container {
             width: 90%;
             max-width: 800px;
-            margin: 40px auto;
+            margin: 150px auto;
             padding: 30px;
             background-color: var(--white);
             border-radius: 8px;
@@ -319,9 +319,9 @@ $qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" 
         <div class="receipt-ticket">
             <div class="receipt-ticket-header">
                 <div class="logo-placeholder">YOUR LOGO</div>
-                <h3>Your Bus Line</h3>
-                <p>Mombasa, Kenya</p>
-                <p>Booking Hotline: +254 7XX XXX XXX</p>
+                <h3>Pacific Coach</h3>
+                <p>Garissa, Kenya</p>
+                <p>Booking Hotline: +254 746333898</p>
                 <p>VAT No: P00XXXXX</p>
             </div>
 
@@ -390,8 +390,9 @@ $qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" 
             </div>
 
             <div class="ticket-final-message">
-                <p>Thank you for choosing Your Bus Line!</p>
+                <p>Thank you for choosing Pacific Coach!</p>
                 <p>Please present this ticket at boarding.</p>
+                 <p>"The journey of a thousand miles begins with a single step."!</p>
             </div>
         </div>
 
