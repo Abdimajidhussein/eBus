@@ -329,7 +329,7 @@ $base_path = '';
                 </div>
                 
                 <div class="dropdown-content">
-                    <a href="profile.php"><i class="fas fa-id-badge"></i> My Profile</a>
+                    <a  href="profile.php"><i class="fas fa-id-badge"></i> My Profile</a>
                     <a href="settings.php"><i class="fas fa-cog"></i> Settings</a>
                     <a href="change_password.php"><i class="fas fa-key"></i> Change Password</a>
                     <?php if ($isAdmin): ?>
