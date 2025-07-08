@@ -1,3 +1,75 @@
+<?php
+// contact.php
+
+// Include your database configuration
+require_once 'includes/config.php';
+
+// Initialize variables for feedback messages
+$status_message = '';
+$message_type = ''; // 'success' or 'error'
+
+// Check if the form has been submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // 1. Retrieve and sanitize form data
+    // trim() removes whitespace from the beginning and end of a string
+    $fullName = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $subject = trim($_POST['subject']);
+    $message = trim($_POST['message']);
+
+    // 2. Basic validation
+    $errors = [];
+
+    if (empty($fullName)) {
+        $errors[] = "Your name is required.";
+    }
+    if (empty($email)) {
+        $errors[] = "Your email is required.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Invalid email format.";
+    }
+    if (empty($subject)) {
+        $errors[] = "Subject is required.";
+    }
+    if (empty($message)) {
+        $errors[] = "Your message is required.";
+    }
+
+    if (empty($errors)) {
+        // Use Prepared Statements for secure insertion
+        $stmt = $conn->prepare("INSERT INTO ContactUsMessages (FullName, EmailAddress, Subject, Message) VALUES (?, ?, ?, ?)");
+
+        if ($stmt) {
+            // 'ssss' indicates four string parameters
+            $stmt->bind_param("ssss", $fullName, $email, $subject, $message);
+
+            if ($stmt->execute()) {
+                $status_message = "Your message has been sent successfully!";
+                $message_type = "success";
+                // Clear form fields after successful submission
+                $fullName = $email = $subject = $message = '';
+            } else {
+                $status_message = "There was an error sending your message. Please try again later.";
+                $message_type = "error";
+                // Log the actual database error for debugging (never show to users)
+                error_log("Error executing contact form statement: " . $stmt->error);
+            }
+            $stmt->close();
+        } else {
+            $status_message = "An internal error occurred. Please try again.";
+            $message_type = "error";
+            error_log("Error preparing contact form statement: " . $conn->error);
+        }
+    } else {
+        // Validation errors occurred
+        $status_message = implode("<br>", $errors);
+        $message_type = "error";
+    }
+
+    // Close database connection after all operations
+    $conn->close();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +78,8 @@
     <title>Contact Us - Pacific Coach</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
-    <?php include 'includes/header.php'; ?>
+
+    <?php include 'includes/header.php'; // Assuming your header includes navigation, etc. ?>
 
     <style>
         :root {
@@ -34,7 +106,7 @@
         .container {
             width: 90%;
             max-width: 900px;
-            margin: 150px auto;
+            margin: 150px auto; /* Adjust margin-top to clear fixed header if any */
             padding: 30px;
             background-color: var(--white);
             border-radius: 8px;
@@ -200,6 +272,27 @@
             border: 0;
         }
 
+        /* Message Alert Styles */
+        .message-alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%; /* Span full width of container */
+            box-sizing: border-box; /* Include padding in width */
+        }
+        .message-alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message-alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .container {
@@ -225,6 +318,12 @@
 </head>
 <body>
     <div class="container">
+        <?php
+        // Display feedback message if any
+        if (!empty($status_message)) {
+            echo '<div class="message-alert ' . $message_type . '">' . $status_message . '</div>';
+        }
+        ?>
         <h2 class="section-title">Contact Pacific Coach</h2>
 
         <div class="contact-info">
@@ -245,22 +344,22 @@
 
         <div class="contact-form-section">
             <h3>Send Us a Message</h3>
-            <form action="process_contact.php" method="POST" class="contact-form">
+            <form action="contact.php" method="POST" class="contact-form">
                 <div class="form-group">
                     <label for="name">Your Name:</label>
-                    <input type="text" id="name" name="name" required>
+                    <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($fullName ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Your Email:</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="subject">Subject:</label>
-                    <input type="text" id="subject" name="subject" required>
+                    <input type="text" id="subject" name="subject" value="<?php echo htmlspecialchars($subject ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="message">Your Message:</label>
-                    <textarea id="message" name="message" required></textarea>
+                    <textarea id="message" name="message" required><?php echo htmlspecialchars($message ?? ''); ?></textarea>
                 </div>
                 <button type="submit">Send Message</button>
             </form>
@@ -269,11 +368,11 @@
         <div class="map-section">
             <h3>Find Us on the Map</h3>
             <div class="map-responsive">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15917.472851410416!2d39.664468249999995!3d-4.04353455!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x184000b021d15b13%3A0x6b4f74d008d511e!2sMombasa%2C%20Kenya!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15959.882190977274!2d39.664408900000005!3d-4.04856015!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x18401344485eb03b%3A0x67df3c921316b252!2sMombasa%20County!5e0!3m2!1sen!2ske!4v1700000000000!5m2!1sen!2ske" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </div>
-    <?php include 'includes/footer.php'; ?>
+    <?php include 'includes/footer.php'; // Assuming your footer includes closing body/html tags ?>
 
 </body>
 </html>
